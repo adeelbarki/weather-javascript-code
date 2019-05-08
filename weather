@@ -100,7 +100,9 @@ Promise.all(promises)
       }
       
       const weatherKelvin = weatherData[i].main.temp
-      console.log('weather(F): ', JSON.stringify(weatherKelvin))
+      const kelvinToFahrenheit = (weatherKelvin - 273.15) * 9 / 5 + 32
+      const weatherWithNoDecimal = Math.trunc(kelvinToFahrenheit)
+      console.log('weather(F): ', JSON.stringify(weatherWithNoDecimal))
 
       const localtime = timeData[i].data.time_zone[0].localtime
       console.log('Date / time:', JSON.stringify(localtime))
