@@ -12,4 +12,51 @@ for (let i = 0; i < array.length; i++) {
   }
 }
 
-console.log(array)
+// HTTP Request to fetch array elements from URL. 
+const makeHttpRequest = (url) => {
+  return new Promise((resolve) => {
+    const http = require('http')
+
+    http.get(url, (response) => {
+      let data = ''
+
+      // A chunk of data has been recieved.
+      response.on('data', (chunk) => {
+        data += chunk
+      });
+
+      // The whole response has been received. Print out the result.
+      response.on('end', () => {
+        resolve(data)
+      });
+
+    }).on("error", (error) => {
+      console.log("Error: " + error.message)
+    });
+  });
+};
+
+
+const getWeatherData = (array) => {
+  return new Promise((resolve) => {
+    const weatherDataPromises = []
+
+    for (let i = 0; i < array.length; i++) {
+      let url = ''
+
+        url = `http://api.openweathermap.org/data/2.5/weather?q=${array[i]}&APPID=1a8ac7b8f66d5a48acf443e3fc063544`
+
+      weatherDataPromises.push(makeHttpRequest(url))
+    }
+    Promise.all(weatherDataPromises)
+      .then(data => {
+        for (let i = 0; i < data.length; i++) {
+          data[i] = JSON.parse(data[i])
+        }
+        resolve(data)
+        console.log(data)
+      })
+  })
+}
+
+getWeatherData(array)
