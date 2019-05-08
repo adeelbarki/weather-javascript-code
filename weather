@@ -56,9 +56,19 @@ const getWeatherData = (array) => {
           data[i] = JSON.parse(data[i])
         }
         resolve(data)
-        console.log(data)
       })
   })
 }
 
-getWeatherData(array)
+const promises = [getWeatherData(array)]
+
+Promise.all(promises)
+  .then(data => {
+    for (let i = 0; i < array.length; i++) {
+      const weatherData = data[0]
+      console.log(array[i])
+      const weatherKelvin = weatherData[i].main.temp
+      console.log('weather(F): ', JSON.stringify(weatherKelvin))
+
+    }
+  })
