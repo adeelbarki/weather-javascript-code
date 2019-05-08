@@ -87,6 +87,18 @@ Promise.all(promises)
       const timeData = data[1]
 
       console.log(array[i])
+      if (!(i in weatherData) || !('main' in weatherData[i]) || !('temp' in weatherData[i].main)) {
+        console.log("No data available on this city")
+        console.log()
+        continue;
+      }
+
+      if (!(i in timeData) || !('data' in timeData[i]) || !('time_zone' in timeData[i].data) || !(0 in timeData[i].data.time_zone)) {
+        console.log("no data available")
+        console.log()
+        continue;
+      }
+      
       const weatherKelvin = weatherData[i].main.temp
       console.log('weather(F): ', JSON.stringify(weatherKelvin))
 
