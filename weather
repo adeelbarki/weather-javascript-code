@@ -19,12 +19,10 @@ const makeHttpRequest = (url) => {
     http.get(url, (response) => {
       let data = ''
 
-      // A chunk of data has been recieved.
       response.on('data', (chunk) => {
         data += chunk
       });
 
-      // The whole response has been received. Print out the result.
       response.on('end', () => {
         resolve(data)
       });
@@ -60,15 +58,42 @@ const getWeatherData = (array) => {
   })
 }
 
-const promises = [getWeatherData(array)]
+const getTimeData = (arr) => {
+  return new Promise((resolve, reject) => {
+    const timeDataPromises = []
+
+    for (let i = 0; i < arr.length; i++) {
+      let url = `http://api.worldweatheronline.com/premium/v1/tz.ashx?q=${arr[i]}&key=af584370a5724491ad643957190505&format=json`;
+
+      timeDataPromises.push(makeHttpRequest(url))
+    }
+
+    Promise.all(timeDataPromises)
+      .then(data => {
+        for (let i = 0; i < data.length; i++) {
+          data[i] = JSON.parse(data[i])
+        }
+        resolve(data)
+      });
+  });
+};
+
+const promises = [getWeatherData(array), getTimeData(array)]
 
 Promise.all(promises)
   .then(data => {
     for (let i = 0; i < array.length; i++) {
       const weatherData = data[0]
+      const timeData = data[1]
+
       console.log(array[i])
       const weatherKelvin = weatherData[i].main.temp
       console.log('weather(F): ', JSON.stringify(weatherKelvin))
 
+      const localtime = timeData[i].data.time_zone[0].localtime
+      console.log('Date / time:', JSON.stringify(localtime))
+      console.log()
+
     }
   })
+
